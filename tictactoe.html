@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe - Multiplayer Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Glassmorphism background blur effect */
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+        }
+
+        /* Landing Page */
+        .landing-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .landing-page.hidden {
+            opacity: 0;
+            visibility: hidden;
+            z-index: -1;
+        }
+
+        .landing-content {
+            text-align: center;
+            color: white;
+            z-index: 1001;
+        }
+
+        .landing-content h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .landing-content p {
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            animation: fadeInUp 0.8s ease 0.2s backwards;
+        }
+
+        .landing-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease 0.4s backwards;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        /* Game Container */
+        .container {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        .game-board {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 10px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            font-size: 2.5rem;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cell:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .cell.x {
+            color: #667eea;
+        }
+
+        .cell.o {
+            color: #764ba2;
+        }
+
+        /* Game Info */
+        .game-info {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            min-width: 280px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .player-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+        }
+
+        .player-indicator.x {
+            background: #667eea;
+        }
+
+        .player-indicator.o {
+            background: #764ba2;
+        }
+
+        .status {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 30px;
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scores {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .score-item {
+            color: white;
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+
+        .reset-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .menu-btn {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Floating Animation Container */
+        .floating-container {
+            position: relative;
+            width: 100%;
+            height: 60px;
+            overflow: hidden;
+            margin: 15px 0;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .floating-item {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float-horizontal 8s linear infinite;
+        }
+
+        .floating-item:nth-child(1) {
+            top: 10px;
+            animation-delay: 0s;
+        }
+
+        .floating-item:nth-child(2) {
+            top: 15px;
+            animation-delay: -2s;
+        }
+
+        .floating-item:nth-child(3) {
+            top: 20px;
+            animation-delay: -4s;
+        }
+
+        .floating-item:nth-child(4) {
+            top: 10px;
+            animation-delay: -6s;
+        }
+
+        .floating-container:hover .floating-item {
+            animation-duration: 20s;
+        }
+
+        @keyframes float-horizontal {
+            0% {
+                left: -30px;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                gap: 20px;
+                align-items: center;
+            }
+
+            .landing-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .board {
+                grid-template-columns: repeat(3, 80px);
+                padding: 20px;
+                gap: 8px;
+            }
+
+            .cell {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+            }
+
+            .game-info {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Landing Page -->
+    <div class="landing-page" id="landingPage">
+        <div class="landing-content">
+            <h1>🎮 Tic Tac Toe</h1>
+            <p>Challenge your friends in an epic game of strategy</p>
+            <div class="landing-buttons">
+                <button class="btn btn-primary" onclick="startGame()">Play Now</button>
+                <button class="btn btn-secondary" onclick="startCPUGame()">vs CPU</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Container -->
+    <div class="container" id="gameContainer" style="display: none;">
+        <div class="game-board">
+            <h2 style="color: white; margin-bottom: 10px;">Tic Tac Toe</h2>
+            <div class="board" id="board">
+                <div class="cell" data-index="0"></div>
+                <div class="cell" data-index="1"></div>
+                <div class="cell" data-index="2"></div>
+                <div class="cell" data-index="3"></div>
+                <div class="cell" data-index="4"></div>
+                <div class="cell" data-index="5"></div>
+                <div class="cell" data-index="6"></div>
+                <div class="cell" data-index="7"></div>
+                <div class="cell" data-index="8"></div>
+            </div>
+        </div>
+
+        <div class="game-info">
+            <div class="status" id="status">Player X's Turn</div>
+            
+            <div class="scores" id="scoresContainer" style="display: none;">
+                <h3 style="color: white; margin-bottom: 10px;">Scores</h3>
+                <div class="score-item">
+                    <span id="playerXScore">Player X: 0</span>
+                </div>
+                <div class="score-item">
+                    <span id="playerOScore">Player O: 0</span>
+                </div>
+                <div class="score-item">
+                    <span id="drawScore">Draws: 0</span>
+                </div>
+            </div>
+
+            <div class="player-info">
+                <div class="player-indicator x"></div>
+                <span>Player X</span>
+            </div>
+            <div class="player-info">
+                <div class="player-indicator o"></div>
+                <span id="playerOLabel">Player O</span>
+            </div>
+
+            <button class="reset-btn" onclick="resetGame()">New Game</button>
+            <button class="menu-btn" onclick="goToMenu()">Back to Menu</button>
+        </div>
+    </div>
+
+    <script>
+        let board = ['', '', '', '', '', '', '', '', ''];
+        let currentPlayer = 'X';
+        let gameActive = true;
+        let isCPUMode = false;
+        let playerXScore = 0;
+        let playerOScore = 0;
+        let drawScore = 0;
+
+        const winningConditions = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        const cells = document.querySelectorAll('.cell');
+        const statusDisplay = document.getElementById('status');
+        const gameContainer = document.getElementById('gameContainer');
+        const landingPage = document.getElementById('landingPage');
+        const scoresContainer = document.getElementById('scoresContainer');
+        const playerOLabel = document.getElementById('playerOLabel');
+
+        cells.forEach(cell => {
+            cell.addEventListener('click', handleCellClick);
+        });
+
+        function startGame() {
+            isCPUMode = false;
+            playerOLabel.textContent = 'Player O';
+            scoresContainer.style.display = 'block';
+            landingPage.classList.add('hidden');
+            gameContainer.style.display = 'flex';
+            resetGame();
+        }
+
+        function startCPUGame() {
+            isCPUMode = true;
+            playerOLabel.textContent = 'CPU';
+            scoresContainer.style.display = 'block';
+            landingPage.classList.add('hidden');
+            gameContainer.style.display = 'flex';
+            resetGame();
+        }
+
+        function handleCellClick(e) {
+            const cell = e.target;
+            const index = cell.getAttribute('data-index');
+
+            if (board[index] !== '' || !gameActive) return;
+
+            board[index] = currentPlayer;
+            cell.textContent = currentPlayer;
+            cell.classList.add(currentPlayer.toLowerCase());
+
+            checkResult();
+
+            if (gameActive && isCPUMode && currentPlayer === 'O') {
+                setTimeout(makeAIMove, 500);
+            } else if (gameActive) {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                updateStatus();
+            }
+        }
+
+        function makeAIMove() {
+            const availableSpots = board.map((cell, index) => cell === '' ? index : null).filter(val => val !== null);
+
+            if (availableSpots.length === 0) return;
+
+            // Simple AI strategy: Check for winning move, block player, or random
+            let move = findWinningMove('O') || findWinningMove('X') || availableSpots[Math.floor(Math.random() * availableSpots.length)];
+
+            board[move] = 'O';
+            const cell = document.querySelector(`[data-index="${move}"]`);
+            cell.textContent = 'O';
+            cell.classList.add('o');
+
+            checkResult();
+            if (gameActive) {
+                currentPlayer = 'X';
+                updateStatus();
+            }
+        }
+
+        function findWinningMove(player) {
+            for (let condition of winningConditions) {
+                const [a, b, c] = condition;
+                if (board[a] === player && board[b] === player && board[c] === '') return c;
+                if (board[a] === player && board[c] === player && board[b] === '') return b;
+                if (board[b] === player && board[c] === player && board[a] === '') return a;
+            }
+            return null;
+        }
+
+        function checkResult() {
+            for (let condition of winningConditions) {
+                const [a, b, c] = condition;
+                if (board[a] === '' || board[b] === '' || board[c] === '') continue;
+                if (board[a] === board[b] && board[b] === board[c]) {
+                    gameActive = false;
+                    statusDisplay.textContent = `${board[a] === 'X' ? 'Player X' : (isCPUMode ? 'CPU' : 'Player O')} Wins! 🎉`;
+                    board[a] === 'X' ? playerXScore++ : playerOScore++;
+                    updateScores();
+                    return;
+                }
+            }
+
+            if (!board.includes('')) {
+                gameActive = false;
+                statusDisplay.textContent = "It's a Draw! 🤝";
+                drawScore++;
+                updateScores();
+            }
+        }
+
+        function updateStatus() {
+            if (gameActive) {
+                statusDisplay.textContent = `${currentPlayer === 'X' ? 'Player X' : (isCPUMode ? 'CPU' : 'Player O')}'s Turn`;
+            }
+        }
+
+        function updateScores() {
+            document.getElementById('playerXScore').textContent = `Player X: ${playerXScore}`;
+            document.getElementById('playerOScore').textContent = `${isCPUMode ? 'CPU' : 'Player O'}: ${playerOScore}`;
+            document.getElementById('drawScore').textContent = `Draws: ${drawScore}`;
+        }
+
+        function resetGame() {
+            board = ['', '', '', '', '', '', '', '', ''];
+            currentPlayer = 'X';
+            gameActive = true;
+            cells.forEach(cell => {
+                cell.textContent = '';
+                cell.className = 'cell';
+            });
+            updateStatus();
+        }
+
+        function goToMenu() {
+            gameContainer.style.display = 'none';
+            landingPage.classList.remove('hidden');
+            playerXScore = 0;
+            playerOScore = 0;
+            drawScore = 0;
+            updateScores();
+        }
+    </script>
+</body>
+</html>
