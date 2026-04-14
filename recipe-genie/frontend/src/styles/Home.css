@@ -1,0 +1,39 @@
+.home {
+  min-height: 100vh;
+  background-color: var(--bg-light);
+}
+
+.search-info {
+  text-align: center;
+  padding: 15px 20px;
+  background-color: var(--bg-white);
+  border-left: 4px solid var(--primary-color);
+  border-radius: 8px;
+  margin-bottom: 30px;
+  color: var(--text-dark);
+}
+
+.search-info strong {
+  color: var(--primary-color);
+}
+
+.nav-links {
+  margin-bottom: 20px;
+}
+
+.nav-link {
+  background-color: var(--secondary-color);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.nav-link:hover {
+  background-color: #3db8ac;
+  transform: translateX(-3px);
+}
+

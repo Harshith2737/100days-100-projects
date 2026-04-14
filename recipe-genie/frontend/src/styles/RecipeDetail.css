@@ -1,0 +1,153 @@
+.recipe-detail {
+  min-height: 100vh;
+  background-color: var(--bg-light);
+}
+
+.recipe-hero {
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  background-color: var(--bg-light);
+}
+
+.recipe-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.recipe-container {
+  max-width: 900px;
+  margin: -100px auto 0;
+  background: var(--bg-white);
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  z-index: 1;
+}
+
+.recipe-detail h1 {
+  font-size: 2.5rem;
+  color: var(--text-dark);
+  margin-bottom: 10px;
+}
+
+.recipe-detail > .description {
+  font-size: 1.1rem;
+  color: var(--text-light);
+  margin-bottom: 30px;
+  line-height: 1.8;
+}
+
+.recipe-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+  margin: 30px 0;
+  padding: 20px;
+  background-color: var(--bg-light);
+  border-radius: 12px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-item strong {
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.info-item span {
+  font-size: 1.1rem;
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.section {
+  margin: 40px 0;
+}
+
+.section h2 {
+  font-size: 1.8rem;
+  color: var(--text-dark);
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.ingredients-list {
+  list-style: none;
+  padding: 0;
+}
+
+.ingredients-list li {
+  padding: 12px 0;
+  padding-left: 30px;
+  position: relative;
+  color: var(--text-dark);
+  font-size: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ingredients-list li:before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--secondary-color);
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.instructions-list {
+  padding-left: 20px;
+}
+
+.instructions-list li {
+  margin-bottom: 20px;
+  color: var(--text-dark);
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.instructions-list li:marker {
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.recipe-detail.loading,
+.recipe-detail.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-size: 1.2rem;
+  color: var(--text-light);
+}
+
+.recipe-detail.error {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .recipe-container {
+    margin-top: -80px;
+    padding: 20px;
+  }
+
+  .recipe-detail h1 {
+    font-size: 1.8rem;
+  }
+
+  .recipe-info {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .section h2 {
+    font-size: 1.3rem;
+  }
+}
