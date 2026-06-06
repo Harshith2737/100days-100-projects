@@ -8,12 +8,12 @@ function AgentPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
     if (!message.trim()) return
 
     const trimmed = message.trim()
-    const nextMessages = [...messages, { role: 'user', content: trimmed }]
+    const nextMessages = [...messages, { role: 'user' as const, content: trimmed }]
     setMessages(nextMessages)
     setMessage('')
     setLoading(true)
